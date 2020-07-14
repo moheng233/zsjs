@@ -4,5 +4,5 @@
 /node_modules
 /yarn-error.log
 /yarn.lock
-src/json/di2.ts
-src/json/student.ts
+src/json/dis2.ts
+src/json/students.ts

@@ -1,8 +1,8 @@
 import pupp from 'puppeteer';
-import { di2 } from './json/di2';
+import { di2 } from './json/dis2';
 import { resolve } from 'path';
 import { execdt, execmm } from './dt';
-import { Studentlist } from './json/student';
+import { Studentlist } from './json/students';
 
 console.log('启动浏览器');
 pupp.launch({

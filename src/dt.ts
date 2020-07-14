@@ -1,5 +1,5 @@
 import pupp from 'puppeteer';
-import { di2 } from './json/di2';
+import { di2 } from './json/dis2';
 import { resolve } from 'path';
 
 export interface Itim {
