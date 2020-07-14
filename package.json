@@ -1,0 +1,19 @@
+{
+  "name": "zsjs",
+  "version": "1.0.0",
+  "main": "build/main.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "build:w": "tsc -w",
+    "dev": "node build/main.js"
+  },
+  "dependencies": {
+    "puppeteer": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.23",
+    "@types/puppeteer": "^3.0.1",
+    "typescript": "^3.9.6"
+  }
+}
