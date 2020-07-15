@@ -1,5 +1,4 @@
 import pupp from 'puppeteer';
-import { di2 } from './json/dis2';
 import { resolve } from 'path';
 
 export interface Itim {
@@ -17,7 +16,7 @@ interface Elements extends Element {
 }
 
 export async function execdt(brower: pupp.Browser,s: Istudent,daan:Itim[]){
-    console.log('打开页面');
+
     const page1 = await brower.newPage();
 
     console.log('打开登录页面');
@@ -26,12 +25,24 @@ export async function execdt(brower: pupp.Browser,s: Istudent,daan:Itim[]){
     console.log('等待登录页面加载完成');
     await page1.waitForSelector('.el-input__inner[name="userName"]');
 
-    console.log('进行登录')
+    console.log(`${s.xm}进行登录`)
     await page1.type('[name="userName"]',s.xj);
     await page1.type('[name="password"]','x123456789');
     await page1.click('.login-btn');
 
-    await page1.waitForSelector('[data-v-b31a865c]');
+    await page1.waitForSelector('[data-v-b31a865c]',{
+        timeout: 3000
+    }).catch(async err => {
+        console.log(`${s.xm}的密码错误，准备重新初始化密码`);
+
+        await execmm(brower,s);
+
+        page1.close();
+
+        await execdt(brower,s,daan);
+
+        throw err;
+    });
     
     await page1.click('li[data-v-1ca057c4]');
 
@@ -75,6 +86,8 @@ export async function execdt(brower: pupp.Browser,s: Istudent,daan:Itim[]){
 }
 
 export async function execmm(brower: pupp.Browser,s: Istudent){
+    console.log(`对${s.xm}的密码进行初始化`);
+
     let page = await brower.newPage();
 
     await page.goto('http://zsjs.njgzx.cn/student/#/');

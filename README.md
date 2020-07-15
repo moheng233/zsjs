@@ -22,6 +22,9 @@ npm run build
 npm run dev
 ```
 
+# 视频演示
+![ys](演示.webm)
+
 # 注意事项
 - 项目是用ts写的，因为我个人比较喜欢完整的代码补全
 - 记得手动创建dt和mm目录

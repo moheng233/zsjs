@@ -3,16 +3,25 @@
   "version": "1.0.0",
   "main": "build/main.js",
   "license": "MIT",
+  "bin": {
+    "zsjs": "build/main.js"
+  },
   "scripts": {
     "build": "tsc",
     "build:w": "tsc -w",
     "dev": "node build/main.js"
   },
   "dependencies": {
+    "figlet": "^1.5.0",
+    "inquirer": "^7.3.2",
+    "ora": "^4.0.4",
     "puppeteer": "^5.1.0"
   },
   "devDependencies": {
+    "@types/figlet": "^1.2.0",
+    "@types/inquirer": "^6.5.0",
     "@types/node": "^14.0.23",
+    "@types/ora": "^3.2.0",
     "@types/puppeteer": "^3.0.1",
     "typescript": "^3.9.6"
   }
