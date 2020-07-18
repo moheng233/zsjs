@@ -1,7 +1,8 @@
 import pupp from 'puppeteer';
 import { resolve } from 'path';
+import { randomNum } from './TaskStack';
 
-export interface Itim {
+export interface Ikey {
     question: Number,
     xuez: String[]
 }
@@ -15,7 +16,13 @@ interface Elements extends Element {
     click():void
 }
 
-export async function execdt(brower: pupp.Browser,s: Istudent,daan:Itim[]){
+/**
+ * 开始自动答题
+ * @param brower 浏览器实例
+ * @param s 学生信息实例
+ * @param daan 答案信息实例
+ */
+export async function startAutoAnswer(brower: pupp.Browser,s: Istudent,keys:Ikey[]){
 
     const page1 = await brower.newPage();
 
@@ -35,11 +42,11 @@ export async function execdt(brower: pupp.Browser,s: Istudent,daan:Itim[]){
     }).catch(async err => {
         console.log(`${s.xm}的密码错误，准备重新初始化密码`);
 
-        await execmm(brower,s);
+        await startChangePassword(brower,s);
 
         page1.close();
 
-        await execdt(brower,s,daan);
+        await startAutoAnswer(brower,s,keys);
 
         throw err;
     });
@@ -54,9 +61,9 @@ export async function execdt(brower: pupp.Browser,s: Istudent,daan:Itim[]){
 
     console.log('等待开始答题');
     await page1.waitForSelector('h3[data-v-8d76b0ae]');
-    await page1.waitFor(1000);
+    await page1.waitFor(randomNum(500,3000));
 
-    for (let q of daan) {
+    for (let q of keys) {
         console.log(`开始回答第${q.question}题`);
         for(let xz of q.xuez){
             console.log(`#question-${q.question} input[value="${xz}"]`);
@@ -85,7 +92,12 @@ export async function execdt(brower: pupp.Browser,s: Istudent,daan:Itim[]){
     await page1.close();
 }
 
-export async function execmm(brower: pupp.Browser,s: Istudent){
+/**
+ * 自动进行密码修改
+ * @param brower 浏览器实例
+ * @param s 学生信息实例
+ */
+export async function startChangePassword(brower: pupp.Browser,s: Istudent){
     console.log(`对${s.xm}的密码进行初始化`);
 
     let page = await brower.newPage();

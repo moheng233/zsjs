@@ -16,7 +16,7 @@
 	// 	"description": "Log output to console"
 	// }
 	"tim": {
-		"scope": "json",
+		"scope": "jsonc",
 		"prefix": "t",
 		"body": [
 			"{",

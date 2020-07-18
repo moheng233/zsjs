@@ -1,11 +1,15 @@
 import pupp from 'puppeteer';
 import figlet from 'figlet';
-import { execdt, execmm, Istudent, Itim } from './dt';
+import { Istudent, Ikey } from './dt';
 import inquirer from 'inquirer';
 import fs from 'fs';
 import path from 'path';
+import { TaskStack, ITask } from './TaskStack';
+import { time } from 'console';
+import { StudentAnswer } from './Lib';
+import ProgressBar from 'progress';
 
-async function main(){
+async function main() {
     console.log(figlet.textSync('ZSJS'));
     let aw1 = await inquirer.prompt([
         {
@@ -22,7 +26,7 @@ async function main(){
         }
     ]);
 
-    if(aw1.ifs != true){
+    if (aw1.ifs != true) {
         let aw2 = await inquirer.prompt([
             {
                 type: "rawlist",
@@ -31,8 +35,8 @@ async function main(){
                 choices: async () => {
                     let studentsList: string[] = [];
 
-                    const filelist = await fs.promises.readdir(path.resolve(__dirname,"../data/student"));
-                    for (const file of filelist){
+                    const filelist = await fs.promises.readdir(path.resolve(__dirname, "../data/student"));
+                    for (const file of filelist) {
                         studentsList.push(file);
                     }
 
@@ -52,12 +56,12 @@ async function main(){
             }
         ]);
 
-        let sf = await fs.promises.readFile(path.resolve(__dirname,`../data/student/${aw2.students}`),'utf-8');
+        let sf = await fs.promises.readFile(path.resolve(__dirname, `../data/student/${aw2.students}`), 'utf-8');
 
         let studentList: Istudent[] = JSON.parse(sf);
         console.log(`一共需要操作的学生数量是${studentList.length}个`);
 
-        if(aw2.mode === "批量答题"){
+        if (aw2.mode === "批量答题") {
 
             let aw3 = await inquirer.prompt([
                 {
@@ -67,8 +71,8 @@ async function main(){
                     choices: async () => {
                         let daanList: string[] = [];
 
-                        const filelist = await fs.promises.readdir(path.resolve(__dirname,"../data/daan"));
-                        for (const file of filelist){
+                        const filelist = await fs.promises.readdir(path.resolve(__dirname, "../data/daan"));
+                        for (const file of filelist) {
                             daanList.push(file);
                         }
 
@@ -77,34 +81,80 @@ async function main(){
                 }
             ]);
 
-            let df = await fs.promises.readFile(path.resolve(__dirname,`../data/daan/${aw3.daan}`),'utf-8');
+            let df = await fs.promises.readFile(path.resolve(__dirname, `../data/daan/${aw3.daan}`), 'utf-8');
 
-            let dList: Itim[] = JSON.parse(df);
+            let dList: Ikey[] = JSON.parse(df);
 
-            const b = await launchP(aw1.headless);
+            // const b = await lausnchP(aw1.headless);
 
-            console.log('打开页面');
-            const page1 = await b.newPage();
+            // console.log('打开页面');
+            // const page1 = await b.newPage();
 
-            console.log('打开登录页面');
-            await page1.goto('http://zsjs.njgzx.cn/student/#/login');
+            // console.log('打开登录页面');
+            // await page1.goto('http://zsjs.njgzx.cn/student/#/login');
 
-            for(let s of studentList){
-                await execdt(b,s,dList).catch(err => {
-                    console.log(err);
-                });
+            // for( let s of studentList){
+            //     await execDt(b,s,dList).catch(err => {
+            //         console.log(err);
+            //     });
+            // }
+
+            let TaskStackI = new TaskStack([
+                await launchP(aw1.headless),
+                await launchP(aw1.headless),
+                await launchP(aw1.headless)
+            ]);
+
+            let Bar = new ProgressBar(`回答进度 [:bar] :current/:total`, {
+                complete: '=',
+                incomplete: '-',
+                width: 25,
+                total: studentList.length
+            });
+
+
+            for (let s of studentList) {
+                TaskStackI.addTask({
+                    Priority: 1,
+                    Exec: async (B) => {
+
+                        let S = new StudentAnswer(B, s, Bar);
+                        await S.AutoInit();
+                        await S.AutoLogin().catch(async (err) => {
+                            await S.AutoChangPassword();
+                            await S.AutoLogin();
+                        });
+
+                        await S.AutoOpenQuestionnaire().catch((err) => {
+                            throw err;
+                        });
+
+                        await S.AutoAnswer(dList);
+
+                        await S.AutoScreenShot();
+
+                        Bar.tick();
+
+                        return true;
+                    }
+                })
             }
-        } else if (aw2.mode === "批量初始化学生密码"){
+
+            await TaskStackI.start();
+
+            Bar.interrupt('全部处理完毕');
             
+        } else if (aw2.mode === "批量初始化学生密码") {
+
         }
     }
 }
 
-async function launchP(headless = false){
+async function launchP(headless = false) {
     console.log('启动浏览器');
     return pupp.launch({
         headless: headless,
-        timeout: 3000,
+        timeout: 30000,
         slowMo: 20
     })
 }

@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "build/main.js",
   "license": "MIT",
+  "pkg": {
+
+  },
   "bin": {
     "zsjs": "build/main.js"
   },
@@ -12,9 +15,11 @@
     "dev": "node build/main.js"
   },
   "dependencies": {
+    "@types/progress": "^2.0.3",
     "figlet": "^1.5.0",
     "inquirer": "^7.3.2",
     "ora": "^4.0.4",
+    "progress": "^2.0.3",
     "puppeteer": "^5.1.0"
   },
   "devDependencies": {
