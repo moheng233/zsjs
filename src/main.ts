@@ -23,6 +23,12 @@ async function main() {
             name: "headless",
             message: "是否启动无头浏览器模式？",
             default: true
+        },
+        {
+            type: "input",
+            name: "pActionValue",
+            message: "使用的浏览器数量",
+            default: 2
         }
     ]);
 
@@ -99,11 +105,13 @@ async function main() {
             //     });
             // }
 
-            let TaskStackI = new TaskStack([
-                await launchP(aw1.headless),
-                await launchP(aw1.headless),
-                await launchP(aw1.headless)
-            ]);
+            let PList: pupp.Browser[] = [];
+
+            for (let index = 0; index < aw1.pActionValue; index++) {
+                PList.push(await launchP(aw1.headless));
+            }
+
+            let TaskStackI = new TaskStack(PList);
 
             let Bar = new ProgressBar(`回答进度 [:bar] :current/:total`, {
                 complete: '=',

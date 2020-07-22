@@ -81,7 +81,6 @@ export class TaskStack<T> {
 
     complete(){
         if(this.runTaskNumber <= 0){
-            console.log('执行完毕');
             this._rej();
         }
     }
